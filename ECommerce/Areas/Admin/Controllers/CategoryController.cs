@@ -16,12 +16,16 @@ namespace ECommerce.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new Category());
         }
 
         [HttpPost]
         public IActionResult Create(Category category)
         {
+            if (!ModelState.IsValid) // false
+            {
+                return View(category);
+            }
             _context.Categories.Add(category);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));

@@ -11,8 +11,8 @@ namespace ECommerce.Areas.Admin.Controllers
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
         public IActionResult Index()
         {
-            var categories = _context.Brands.AsQueryable();
-            return View(categories.AsEnumerable());
+            var brands = _context.Brands.AsQueryable();
+            return View(brands.AsEnumerable());
         }
         [HttpGet]
         public IActionResult Create()
