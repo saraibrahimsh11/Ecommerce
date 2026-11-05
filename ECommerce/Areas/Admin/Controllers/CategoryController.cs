@@ -7,10 +7,18 @@ namespace ECommerce.Areas.Admin.Controllers
     [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context = new ApplicationDbContext();
-        public IActionResult Index()
+        //private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private readonly IRepository<Category> _categoryRepositry;// = new Repository<Category>();
+
+        public CategoryController(IRepository<Category> categoryRepositry)
         {
-            var categories = _context.Categories.AsQueryable();
+            _categoryRepositry = categoryRepositry;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            //var categories = _context.Categories.AsQueryable();
+            var categories = await _categoryRepositry.GetListAsync();
             return View(categories.AsEnumerable());
         }
         [HttpGet]
@@ -20,21 +28,24 @@ namespace ECommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public async Task<IActionResult> Create(Category category)
         {
             if (!ModelState.IsValid) // false
             {
                 return View(category);
             }
-            _context.Categories.Add(category);
-            _context.SaveChanges();
+            //_context.Categories.Add(category);
+            await _categoryRepositry.AddAsync(category);
+            //_context.SaveChanges();
+            await _categoryRepositry.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            //var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = await _categoryRepositry.GetOneAsync(c => c.Id == id);
             if(category == null)
             {
                 return RedirectToAction("NotFoundPage", "Home");
@@ -43,19 +54,24 @@ namespace ECommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Category category)
+        public async Task<IActionResult> Update(Category category)
         {
-            _context.Categories.Update(category);
-            _context.SaveChanges();
+            //_context.Categories.Update(category);
+            _categoryRepositry.Update(category);
+            //_context.SaveChanges();
+            await _categoryRepositry.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
-            
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            //var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = await _categoryRepositry.GetOneAsync(c => c.Id == id);
+
+            //_context.Categories.Remove(category);
+            _categoryRepositry.Remove(category);
+            //_context.SaveChanges();
+            await _categoryRepositry.CommitAsync();
             
             return RedirectToAction(nameof(Index));
         }

@@ -8,10 +8,18 @@ namespace ECommerce.Areas.Admin.Controllers
     [Area("Admin")]
     public class BrandController : Controller
     {
-        private readonly ApplicationDbContext _context = new ApplicationDbContext();
-        public IActionResult Index()
+        //private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private readonly IRepository<Brand> _brandRepositry;// = new Repository<Brand>();
+
+        public BrandController(IRepository<Brand> brandRepositry)
         {
-            var brands = _context.Brands.AsQueryable();
+            _brandRepositry = brandRepositry;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            //var brands = _context.Brands.AsQueryable();
+            var brands = await _brandRepositry.GetListAsync();
             return View(brands.AsEnumerable());
         }
         [HttpGet]
@@ -21,7 +29,7 @@ namespace ECommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Brand brand , IFormFile ImageFile)
+        public async Task<IActionResult> Create(Brand brand , IFormFile ImageFile)
         {
             if(ImageFile != null && ImageFile.Length > 0)
             {
@@ -37,15 +45,18 @@ namespace ECommerce.Areas.Admin.Controllers
 
                 brand.Logo = fileName;
             }
-            _context.Brands.Add(brand);
-            _context.SaveChanges();
+            //_context.Brands.Add(brand);
+            await _brandRepositry.AddAsync(brand);
+            //_context.SaveChanges();
+            await _brandRepositry.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var brand = _context.Brands.FirstOrDefault(c => c.Id == id);
+            //var brand = _context.Brands.FirstOrDefault(c => c.Id == id);
+            var brand =  await _brandRepositry.GetOneAsync(c => c.Id == id);
             if(brand == null)
             {
                 return RedirectToAction("NotFoundPage", "Home");
@@ -54,9 +65,10 @@ namespace ECommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Brand brand , IFormFile ImageFile)
+        public async Task<IActionResult> Update(Brand brand , IFormFile ImageFile)
         {
-            var brandInDb = _context.Brands.AsNoTracking().FirstOrDefault(b => b.Id == brand.Id);
+            //var brandInDb = _context.Brands.AsNoTracking().FirstOrDefault(b => b.Id == brand.Id);
+            var brandInDb = await _brandRepositry.GetOneAsync(b => b.Id == brand.Id, isTracked: false);
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 //var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
@@ -82,14 +94,17 @@ namespace ECommerce.Areas.Admin.Controllers
             {
                 brand.Logo = brandInDb.Logo;
             }
-            _context.Brands.Update(brand);
-            _context.SaveChanges();
+            //_context.Brands.Update(brand);
+            _brandRepositry.Update(brand);
+            //_context.SaveChanges();
+            await _brandRepositry.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var brand = _context.Brands.FirstOrDefault(c => c.Id == id);
+            //var brand = _context.Brands.FirstOrDefault(c => c.Id == id);
+            var brand = await _brandRepositry.GetOneAsync(c => c.Id == id);
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", brand.Logo);
 
@@ -98,13 +113,13 @@ namespace ECommerce.Areas.Admin.Controllers
                 System.IO.File.Delete(filePath);
             }
 
-            _context.Brands.Remove(brand);
-            _context.SaveChanges();
+            //_context.Brands.Remove(brand);
+            _brandRepositry.Remove(brand);
+            //_context.SaveChanges();
+            await _brandRepositry.CommitAsync();
             
             return RedirectToAction(nameof(Index));
         }
-
-
 
     }
 }
