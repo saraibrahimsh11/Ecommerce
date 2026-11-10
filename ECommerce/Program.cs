@@ -1,4 +1,7 @@
 using ECommerce.Data;
+using ECommerce.Utilities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce
@@ -21,13 +24,25 @@ namespace ECommerce
                 options.UseSqlServer(connectionString)
                 );
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+                //options.Lockout.MaxFailedAccessAttempts = 10;
+                //options.Password.RequiredLength = 6;
+                //options.SignIn
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
             //builder.Services.AddScoped(typeof(Repository<>));
 
             builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
             builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
             builder.Services.AddScoped<IRepository<Brand>, Repository<Brand>>();
+            builder.Services.AddScoped<IRepository<ApplicationUserOtp>, Repository<ApplicationUserOtp>>();
             builder.Services.AddScoped<IProductSubImageRepositry, ProductSubImageRepositry>();
             builder.Services.AddScoped<IProductColorRepositry , ProductColorRepositry>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
@@ -47,7 +62,7 @@ namespace ECommerce
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{area=Admin}/{controller=Category}/{action=Index}/{id?}")
+                pattern: "{area=Identity}/{controller=Account}/{action=Register}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
