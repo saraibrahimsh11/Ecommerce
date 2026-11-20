@@ -1,4 +1,5 @@
-﻿using ECommerce.ViewModels;
+﻿using ECommerce.Utilities;
+using ECommerce.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,7 @@ namespace ECommerce.Areas.Identity.Controllers
                 );
 
             TempData["Successfull_Notification"] = "Registration Successfully";
+            await _userManager.AddToRoleAsync(user, CD.CUSTOMER);
             return RedirectToAction(nameof(Login));
         }
 
@@ -95,7 +97,7 @@ namespace ECommerce.Areas.Identity.Controllers
             {
                 if (result.IsLockedOut)
                 {
-                    ModelState.AddModelError("", "To many attempts please try again later");
+                    ModelState.AddModelError("", "You are Locked please try again later");
                 }
                 else if (result.IsNotAllowed)
                 {
@@ -249,6 +251,19 @@ namespace ECommerce.Areas.Identity.Controllers
                 return View(resetPasswordVM);
             }
             return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

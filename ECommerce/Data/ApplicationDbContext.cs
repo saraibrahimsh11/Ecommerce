@@ -16,6 +16,7 @@ namespace ECommerce.Data
         public DbSet<ProductSubImage> ProductSubImages { get; set; }
         public DbSet<ProductColor> ProductColors { get; set; }
         public DbSet<ApplicationUserOtp> ApplicationUserOtps { get; set; }
+        public DbSet<Cart> Carts { get; set; }
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    base.OnConfiguring(optionsBuilder);

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/customer/styles.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <link rel="stylesheet" href="~/ECommerce.styles.css" asp-append-version="true" />
 </head>
@@ -32,12 +33,26 @@
                             </ul>
                         </li>
                     </ul>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/Identity/Account/Login">Login</a></li>
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/Identity/Account/Register">Register</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/Identity/Account/Logout">Logout</a></li>
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/Identity/Profile/Index">Hello @User.Identity.Name</a></li>
+                        }
+
+                        
+                    </ul>
                     <form class="d-flex">
-                        <button class="btn btn-outline-dark" type="submit">
+                        <a href="/Customer/Cart/Index" class="btn btn-outline-dark" type="submit">
                             <i class="bi-cart-fill me-1"></i>
                             Cart
                             <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                        </button>
+                        </a>
                     </form>
                 </div>
             </div>

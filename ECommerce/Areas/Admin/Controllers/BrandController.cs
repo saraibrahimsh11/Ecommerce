@@ -1,11 +1,14 @@
 ﻿using ECommerce.Data;
 using ECommerce.Models;
+using ECommerce.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{CD.SUPER_ADMIN} , {CD.ADMIN},{CD.EMPLOYEE}")]
     public class BrandController : Controller
     {
         //private readonly ApplicationDbContext _context = new ApplicationDbContext();

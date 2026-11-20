@@ -1,0 +1,96 @@
+﻿@model IEnumerable<ApplicationUser>
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">All Categories</h2>
+        </div>
+        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+            <a href="/Admin/Category/Create" class="btn btn-success">Create</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">UserName</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">EmailConfirmed</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            <td>@item.Name</td>
+                            <td>@item.UserName</td>
+                            <td>@item.Email</td>
+                            <td>@item.EmailConfirmed</td>
+
+                            <td>
+                                @if (item.EmailConfirmed)
+                                {
+                                    <span class="badge text-bg-success">
+                                        Confirm
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-danger">
+                                        Not Confirm
+                                    </span>
+                                }
+
+                            </td>
+                            <td>
+                                @if(item.LockoutEnd == null || DateTime.UtcNow > item.LockoutEnd)
+                                {
+                                    <a href="/Admin/User/LockUnLock/@item.Id" type="button" class="btn btn-danger">Lock</a>
+                                }
+                                else
+                                {
+                                    <a href="/Admin/User/LockUnLock/@item.Id" type="button" class="btn btn-success">UnLock</a>
+                                }
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_NotificationPartial" />
+    <partial name="_ValidationScriptsPartial" />
+}
+<script>
+    document.querySelectorAll(".btn-delete").forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const deleteUrl = this.href;
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    });
+</script>

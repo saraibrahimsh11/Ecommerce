@@ -1,6 +1,8 @@
 ﻿using ECommerce.Data;
 using ECommerce.Models;
+using ECommerce.Utilities;
 using ECommerce.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.WebRequestMethods;
@@ -8,6 +10,7 @@ using static System.Net.WebRequestMethods;
 namespace ECommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{CD.SUPER_ADMIN} , {CD.ADMIN},{CD.EMPLOYEE}")]
     public class ProductController : Controller
     {
         //private readonly ApplicationDbContext _context = new ApplicationDbContext();
